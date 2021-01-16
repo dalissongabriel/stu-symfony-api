@@ -77,15 +77,37 @@ class MedicoController
 
         return new JsonResponse($medicoAntigo);
     }
-    
+
+    #[Route("/medicos/{id}", methods: ["DELETE"])]
+    public function remove(int $id): Response
+    {
+
+        $medico = $this->buscaMedico($id);
+        if (is_null($medico)) {
+            return new Response('', Response::HTTP_NOT_FOUND);
+        }
+
+
+        $this->entityManager->remove($medico);
+        $this->entityManager->flush();
+        return new JsonResponse($medico);
+
+
+        return new Response('', Response::HTTP_NO_CONTENT);
+    }
+
+
     /**
      * @param int $id
      * @return object|null
      */
     public function buscaMedico(int $id): ?object
     {
-        $repositorio = $this->entityManager->getRepository(Medico::class);
-        $medico = $repositorio->find($id);
+
+        $medico = $this
+            ->entityManager
+            ->getReference(Medico::class, $id);
+
         return $medico;
     }
 }
