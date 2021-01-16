@@ -107,4 +107,16 @@ class MedicoController
 
         return $medico;
     }
+
+    #[Route("/especialidades/{id}/medicos", methods: ["GET"])]
+    public function buscarPorEspecialidade(int $id): Response
+    {
+        $repository = $this->entityManager->getRepository(Medico::class);
+        $medicoList = $repository->findBy(["especialidade"=>$id]);
+
+        if (is_null($medicoList)) {
+            return new Response('', Response::HTTP_NO_CONTENT);
+        }
+        return new JsonResponse($medicoList);
+    }
 }
