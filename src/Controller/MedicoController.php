@@ -27,7 +27,11 @@ class MedicoController
     {
         $body = $request->getContent();
         $dados = json_decode($body);
-        $medico = new Medico($dados->nome , $dados->crm);
+        $medico = new Medico();
+
+        $medico->nome = $dados->nome;
+        $medico->crm = $dados->crm;
+
         $this->entityManager->persist($medico);
         $this->entityManager->flush();
         return new JsonResponse($medico);

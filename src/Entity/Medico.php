@@ -4,27 +4,25 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Entity;
 
 /**
- * Class Medico
  * @ORM\Entity()
- */
+*/
 class Medico
 {
-    public string $nome;
-    public int $crm;
-
     /**
-     * Medico constructor.
-     * @param string $nome
-     * @param int $crm
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
-    public function __construct(string $nome, int $crm)
-    {
-        $this->nome = $nome;
-        $this->crm = $crm;
-    }
-
-
-
+    public int $id;
+    /**
+     * @ORM\Column(type="string")
+     */
+    public string $nome;
+    /**
+     * @ORM\Column(type="integer")
+     */
+    public int $crm;
 }
