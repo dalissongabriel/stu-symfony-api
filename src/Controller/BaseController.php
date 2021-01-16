@@ -81,7 +81,7 @@ abstract class BaseController extends AbstractController
         $this->entityManager->persist($entitdade);
         $this->entityManager->flush();
 
-        return new JsonResponse($entitdade);
+        return new JsonResponse($entitdade, Response::HTTP_CREATED);
     }
 
 
