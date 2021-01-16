@@ -84,5 +84,22 @@ abstract class BaseController extends AbstractController
         return new JsonResponse($entitdade, Response::HTTP_CREATED);
     }
 
+    public function update(int $id, Request $request): Response
+    {
+        $dadosRequest = $request->getContent();
+        $novaEntidade = $this->factory->criar($dadosRequest);
+        $entidade = $this->repository->find($id);
+
+        if (is_null($entidade)) {
+            return new Response('',Response::HTTP_NOT_FOUND);
+        }
+        $this->atualizaEntidade($entidade, $novaEntidade);
+
+        $this->entityManager->flush();
+
+        return new JsonResponse($entidade);
+    }
+
+    abstract public function atualizaEntidade(object $entidade, object $novaEntidade);
 
 }

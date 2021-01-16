@@ -19,6 +19,12 @@ create_medico:
   methods:
     - POST
 
+update_medico:
+  path: /medicos/{id}
+  controller: App\Controller\MedicoController::update
+  methods:
+    - PUT
+
 remove_medico:
   path: /medicos/{id}
   controller: App\Controller\MedicoController::remove
@@ -42,6 +48,12 @@ create_especialidade:
   controller: App\Controller\EspecialidadesController::create
   methods:
     - POST
+
+update_especialidade:
+  path: /especialidades/{id}
+  controller: App\Controller\EspecialidadesController::update
+  methods:
+    - PUT
 
 remove_especialidade:
   path: /especialidades/{id}

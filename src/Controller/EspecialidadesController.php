@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Especialidade;
 use App\Helper\EspecialidadeFactory;
 use App\Repository\EspecialidadeRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,24 +24,6 @@ class EspecialidadesController extends BaseController
 
     }
 
-    #[Route("/especialidades/{id}",methods: ["PUT"])]
-    public function atualiza(int $id, Request $request): Response
-    {
-        $dadosRequest = $request->getContent();
-        $dadosJson = json_decode($dadosRequest);
-
-        $especialidade = $this->repository->find($id);
-
-        if (is_null($especialidade)) {
-            return new Response('',Response::HTTP_NOT_FOUND);
-        }
-
-        $especialidade->setDescricao($dadosJson->descricao);
-
-        $this->entityManager->flush();
-
-        return new JsonResponse($especialidade);
-    }
 
     #[Route("/especialidades/{id}", methods: ["DELETE"])]
     public function remove(int $id): Response
@@ -55,5 +38,14 @@ class EspecialidadesController extends BaseController
         $this->entityManager->flush();
 
         return new Response('', Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @param Especialidade $entidade
+     * @param Especialidade $novaEntidade
+     */
+    public function atualizaEntidade(object $entidade, object $novaEntidade)
+    {
+        $entidade->setDescricao($novaEntidade->getDescricao());
     }
 }

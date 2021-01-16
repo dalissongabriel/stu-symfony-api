@@ -3,6 +3,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Medico;
 use App\Helper\MedicoFactory;
 use App\Repository\MedicoRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,27 +24,6 @@ class MedicoController extends BaseController
         parent::__construct($repository, $entityManager, $factory);
     }
 
-    #[Route('/medicos/{id}', methods: ["PUT"])]
-    public function atualiza(int $id, Request $request): Response
-    {
-
-        $corpoRequisicao = $request->getContent();
-
-        $dadosNovos = json_decode($corpoRequisicao);
-
-        $medico = $this->buscaMedico($id);
-
-        if (is_null($medico)) {
-            return new Response('',Response::HTTP_NOT_FOUND);
-        }
-        $medico->setNome($dadosNovos->nome);
-        $medico->setCrm($medico->crm);
-
-        $this->entityManager->flush();
-
-        return new JsonResponse($medico);
-    }
-
     #[Route("/especialidades/{id}/medicos", methods: ["GET"])]
     public function buscarPorEspecialidade(int $id): Response
     {
@@ -52,15 +32,14 @@ class MedicoController extends BaseController
         return new JsonResponse($medicoList);
     }
 
-
     /**
-     * @param int $id
-     * @return object|null
+     * @param Medico $entidade
+     * @param Medico $novaEntidade
      */
-    public function buscaMedico(int $id): ?object
+    public function atualizaEntidade(object $entidade, object $novaEntidade)
     {
-        $medico = $this->repository->find($id);
-
-        return $medico;
+        $entidade->setNome($novaEntidade->getNome())
+            ->setCrm($novaEntidade->getCrm())
+            ->setEspecialidade($novaEntidade->getEspecialidade());
     }
 }
