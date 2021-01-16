@@ -44,4 +44,16 @@ class MedicoController
         $data = $repository->findAll();
         return new JsonResponse($data);
     }
+
+    #[Route('/medicos/{id}', methods: ["GET"])]
+    public function buscarUm(Request $request): Response
+    {
+        $id = $request->get("id");
+        $repository = $this->entityManager->getRepository(Medico::class);
+        $medico = $repository->findOneBy(["id"=>$id]);
+
+        $codigo_status = is_null($medico) ? Response::HTTP_NO_CONTENT :200;
+        
+        return new JsonResponse($medico,$codigo_status);
+    }
 }
