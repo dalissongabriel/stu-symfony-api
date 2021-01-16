@@ -13,6 +13,12 @@ medico:
   methods:
     - GET
 
+create_medico:
+  path: /medicos
+  controller: App\Controller\MedicoController::create
+  methods:
+    - POST
+
 remove_medico:
   path: /medicos/{id}
   controller: App\Controller\MedicoController::remove
@@ -30,6 +36,12 @@ especialidade:
   controller: App\Controller\EspecialidadesController::find
   methods:
     - GET
+    -
+create_especialidade:
+  path: /especialidades
+  controller: App\Controller\EspecialidadesController::create
+  methods:
+    - POST
 
 remove_especialidade:
   path: /especialidades/{id}

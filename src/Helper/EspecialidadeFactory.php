@@ -6,7 +6,7 @@ namespace App\Helper;
 
 use App\Entity\Especialidade;
 
-class EspecialidadeFactory
+class EspecialidadeFactory implements EntidadeFactoryInterface
 {
 
     public function criar(string $corpoRequisicao): Especialidade

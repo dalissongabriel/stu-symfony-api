@@ -14,27 +14,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class MedicoController extends BaseController
 {
 
-    private MedicoFactory $medicoFactory;
-
     public function __construct(
         EntityManagerInterface $entityManager,
-        MedicoFactory $medicoFactory,
+        MedicoFactory $factory,
         MedicoRepository $repository
     )
     {
-        parent::__construct($repository, $entityManager);
-        $this->medicoFactory = $medicoFactory;
-    }
-
-    #[Route('/medicos', methods: ["POST"])]
-    public function novo(Request $request): Response
-    {
-        $body = $request->getContent();
-        $medico = $this->medicoFactory->criarMedico($body);
-
-        $this->entityManager->persist($medico);
-        $this->entityManager->flush();
-        return new JsonResponse($medico);
+        parent::__construct($repository, $entityManager, $factory);
     }
 
     #[Route('/medicos/{id}', methods: ["PUT"])]
