@@ -3,8 +3,6 @@
 
 namespace App\Controller;
 
-
-use App\Entity\Medico;
 use App\Helper\MedicoFactory;
 use App\Repository\MedicoRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,14 +11,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class MedicoController
+class MedicoController extends BaseController
 {
 
     private EntityManagerInterface $entityManager;
     private MedicoFactory $medicoFactory;
-    /**
-     * @var MedicoRepository
-     */
     private MedicoRepository $repository;
 
     public function __construct(
@@ -29,7 +24,7 @@ class MedicoController
         MedicoRepository $repository
     )
     {
-
+        parent::__construct($repository);
         $this->entityManager = $entityManager;
         $this->medicoFactory = $medicoFactory;
         $this->repository = $repository;
@@ -44,13 +39,6 @@ class MedicoController
         $this->entityManager->persist($medico);
         $this->entityManager->flush();
         return new JsonResponse($medico);
-    }
-
-    #[Route('/medicos', methods: ["GET"])]
-    public function buscarTodos(Request $request): Response
-    {
-        $corpoRequisicao = $this->repository->findAll();
-        return new JsonResponse($corpoRequisicao);
     }
 
     #[Route('/medicos/{id}', methods: ["GET"])]

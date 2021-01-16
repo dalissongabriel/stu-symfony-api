@@ -1,3 +1,14 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+medicos:
+  path: /medicos
+  controller: App\Controller\MedicoController::findAll
+  methods:
+    - GET
+
+especialidades:
+  path: /especialidades
+  controller: App\Controller\EspecialidadesController::findAll
+  methods:
+    - GET
