@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Medico;
 use App\Helper\MedicoFactory;
+use App\Repository\MedicoRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,15 +18,21 @@ class MedicoController
 
     private EntityManagerInterface $entityManager;
     private MedicoFactory $medicoFactory;
+    /**
+     * @var MedicoRepository
+     */
+    private MedicoRepository $repository;
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        MedicoFactory $medicoFactory
+        MedicoFactory $medicoFactory,
+        MedicoRepository $repository
     )
     {
 
         $this->entityManager = $entityManager;
         $this->medicoFactory = $medicoFactory;
+        $this->repository = $repository;
     }
 
     #[Route('/medicos', methods: ["POST"])]
@@ -42,15 +49,13 @@ class MedicoController
     #[Route('/medicos', methods: ["GET"])]
     public function buscarTodos(Request $request): Response
     {
-        $repository = $this->entityManager->getRepository(Medico::class);
-        $corpoRequisicao = $repository->findAll();
+        $corpoRequisicao = $this->repository->findAll();
         return new JsonResponse($corpoRequisicao);
     }
 
     #[Route('/medicos/{id}', methods: ["GET"])]
     public function buscarUm(int $id, Request $request): Response
     {
-
         $medico = $this->buscaMedico($id);
         $codigo_status = is_null($medico) ? Response::HTTP_NO_CONTENT :200;
 
@@ -92,6 +97,14 @@ class MedicoController
         return new Response('', Response::HTTP_NO_CONTENT);
     }
 
+    #[Route("/especialidades/{id}/medicos", methods: ["GET"])]
+    public function buscarPorEspecialidade(int $id): Response
+    {
+        $medicoList = $this->repository->findBy(["especialidade"=>$id]);
+
+        return new JsonResponse($medicoList);
+    }
+
 
     /**
      * @param int $id
@@ -99,24 +112,8 @@ class MedicoController
      */
     public function buscaMedico(int $id): ?object
     {
-
-        $repository = $this
-            ->entityManager
-            ->getRepository(Medico::class);
-        $medico = $repository->find($id);
+        $medico = $this->repository->find($id);
 
         return $medico;
-    }
-
-    #[Route("/especialidades/{id}/medicos", methods: ["GET"])]
-    public function buscarPorEspecialidade(int $id): Response
-    {
-        $repository = $this->entityManager->getRepository(Medico::class);
-        $medicoList = $repository->findBy(["especialidade"=>$id]);
-
-        if (is_null($medicoList)) {
-            return new Response('', Response::HTTP_NO_CONTENT);
-        }
-        return new JsonResponse($medicoList);
     }
 }
