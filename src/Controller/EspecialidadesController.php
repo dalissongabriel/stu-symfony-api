@@ -12,23 +12,14 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class EspecialidadesController extends BaseController
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private EntityManagerInterface $entityManager;
-    /**
-     * @var EspecialidadeRepository
-     */
-    private EspecialidadeRepository $repository;
+
 
     public function __construct(
         EntityManagerInterface $entityManager,
         EspecialidadeRepository $repository
     )
     {
-        parent::__construct($repository);
-        $this->entityManager = $entityManager;
-        $this->repository = $repository;
+        parent::__construct($repository, $entityManager);
     }
 
     #[Route('/especialidades', methods: ["POST"])]

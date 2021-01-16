@@ -13,6 +13,12 @@ medico:
   methods:
     - GET
 
+remove_medico:
+  path: /medicos/{id}
+  controller: App\Controller\MedicoController::remove
+  methods:
+    - DELETE
+
 especialidades:
   path: /especialidades
   controller: App\Controller\EspecialidadesController::findAll
@@ -24,3 +30,9 @@ especialidade:
   controller: App\Controller\EspecialidadesController::find
   methods:
     - GET
+
+remove_especialidade:
+  path: /especialidades/{id}
+  controller: App\Controller\EspecialidadesController::remove
+  methods:
+    - DELETE

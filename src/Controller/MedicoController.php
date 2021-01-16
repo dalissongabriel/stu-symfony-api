@@ -14,9 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class MedicoController extends BaseController
 {
 
-    private EntityManagerInterface $entityManager;
     private MedicoFactory $medicoFactory;
-    private MedicoRepository $repository;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -24,10 +22,8 @@ class MedicoController extends BaseController
         MedicoRepository $repository
     )
     {
-        parent::__construct($repository);
-        $this->entityManager = $entityManager;
+        parent::__construct($repository, $entityManager);
         $this->medicoFactory = $medicoFactory;
-        $this->repository = $repository;
     }
 
     #[Route('/medicos', methods: ["POST"])]
@@ -60,20 +56,6 @@ class MedicoController extends BaseController
         $this->entityManager->flush();
 
         return new JsonResponse($medico);
-    }
-
-    #[Route("/medicos/{id}", methods: ["DELETE"])]
-    public function remove(int $id): Response
-    {
-
-        $medico = $this->buscaMedico($id);
-        if (is_null($medico)) {
-            return new Response('', Response::HTTP_NOT_FOUND);
-        }
-        $this->entityManager->remove($medico);
-        $this->entityManager->flush();
-
-        return new Response('', Response::HTTP_NO_CONTENT);
     }
 
     #[Route("/especialidades/{id}/medicos", methods: ["GET"])]
