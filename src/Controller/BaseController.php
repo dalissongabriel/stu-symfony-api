@@ -6,6 +6,7 @@ namespace App\Controller;
 
 
 use App\Helper\EntidadeFactoryInterface;
+use App\Helper\ExtratorDadosRequest;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,26 +29,29 @@ abstract class BaseController extends AbstractController
      * @var EntidadeFactoryInterface
      */
     protected EntidadeFactoryInterface $factory;
+    /**
+     * @var ExtratorDadosRequest
+     */
+    private ExtratorDadosRequest $extratorDadosRequest;
 
     public function __construct(
         ObjectRepository $repository,
         EntityManagerInterface $entityManager,
-        EntidadeFactoryInterface $factory
+        EntidadeFactoryInterface $factory,
+        ExtratorDadosRequest $extratorDadosRequest
     )
     {
 
         $this->repository = $repository;
         $this->entityManager = $entityManager;
         $this->factory = $factory;
+        $this->extratorDadosRequest = $extratorDadosRequest;
     }
 
     public function findAll(Request $request): Response
     {
-        $sortInfo = $request->query->get("sort");
-        $filterInfo = $request->query->all();
-        if (isset($filterInfo["sort"])) {
-            unset($filterInfo["sort"]);
-        }
+        $sortInfo = $this->extratorDadosRequest->buscaDadosOrdenacao($request);
+        $filterInfo = $this->extratorDadosRequest->buscaDadosFiltros($request);
 
         $entityList = $this->repository->findBy($filterInfo,$sortInfo);
         return new JsonResponse($entityList);
