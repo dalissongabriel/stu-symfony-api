@@ -41,10 +41,11 @@ abstract class BaseController extends AbstractController
         $this->factory = $factory;
     }
 
-    public function findAll(): Response
+    public function findAll(Request $request): Response
     {
+        $sortInfo = $request->query->get("sort");
 
-        $entityList = $this->repository->findAll();
+        $entityList = $this->repository->findBy([],$sortInfo);
         return new JsonResponse($entityList);
     }
 
