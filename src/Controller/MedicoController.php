@@ -46,14 +46,37 @@ class MedicoController
     }
 
     #[Route('/medicos/{id}', methods: ["GET"])]
-    public function buscarUm(Request $request): Response
+    public function buscarUm(int $id, Request $request): Response
     {
-        $id = $request->get("id");
         $repository = $this->entityManager->getRepository(Medico::class);
         $medico = $repository->findOneBy(["id"=>$id]);
 
         $codigo_status = is_null($medico) ? Response::HTTP_NO_CONTENT :200;
-        
+
         return new JsonResponse($medico,$codigo_status);
+    }
+
+    #[Route('/medicos/{id}', methods: ["PUT"])]
+    public function atualiza(int $id, Request $request): Response
+    {
+        $data = $request->getContent();
+        $jsonData = json_decode($data);
+
+        $medico = new Medico();
+        $medico->nome = $jsonData->nome;
+        $medico->crm = $jsonData->crm;
+
+        $repositorio = $this->entityManager->getRepository(Medico::class);
+
+        $medicoAntigo = $repositorio->find($id);
+        if (is_null($medicoAntigo)) {
+            return new Response('',Response::HTTP_NOT_FOUND);
+        }
+        $medicoAntigo->nome = $medico->nome;
+        $medicoAntigo->crm = $medico->crm;
+
+        $this->entityManager->flush();
+
+        return new JsonResponse($medicoAntigo);
     }
 }
