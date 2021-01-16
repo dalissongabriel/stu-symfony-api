@@ -3,7 +3,12 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Class Medico
+ * @ORM\Entity()
+ */
 class Medico
 {
     public string $nome;
