@@ -36,4 +36,12 @@ class MedicoController
         $this->entityManager->flush();
         return new JsonResponse($medico);
     }
+
+    #[Route('/medicos', methods: ["GET"])]
+    public function buscarTodos(Request $request): Response
+    {
+        $repository = $this->entityManager->getRepository(Medico::class);
+        $data = $repository->findAll();
+        return new JsonResponse($data);
+    }
 }
