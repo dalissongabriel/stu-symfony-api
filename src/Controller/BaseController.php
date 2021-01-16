@@ -44,8 +44,12 @@ abstract class BaseController extends AbstractController
     public function findAll(Request $request): Response
     {
         $sortInfo = $request->query->get("sort");
+        $filterInfo = $request->query->all();
+        if (isset($filterInfo["sort"])) {
+            unset($filterInfo["sort"]);
+        }
 
-        $entityList = $this->repository->findBy([],$sortInfo);
+        $entityList = $this->repository->findBy($filterInfo,$sortInfo);
         return new JsonResponse($entityList);
     }
 
