@@ -64,4 +64,23 @@ class EspecialidadesController extends AbstractController
 
         return new JsonResponse($especialidade, $statusCode);
     }
+
+    #[Route("/especialidades/{id}",methods: ["PUT"])]
+    public function atualiza(int $id, Request $request): Response
+    {
+        $dadosRequest = $request->getContent();
+        $dadosJson = json_decode($dadosRequest);
+
+        $especialidade = $this->repository->find($id);
+
+        if (is_null($especialidade)) {
+            return new Response('',Response::HTTP_NOT_FOUND);
+        }
+
+        $especialidade->setDescricao($dadosJson->descricao);
+
+        $this->entityManager->flush();
+
+        return new JsonResponse($especialidade);
+    }
 }
