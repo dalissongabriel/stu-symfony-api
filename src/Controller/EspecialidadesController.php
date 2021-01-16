@@ -83,4 +83,19 @@ class EspecialidadesController extends AbstractController
 
         return new JsonResponse($especialidade);
     }
+
+    #[Route("/especialidades/{id}", methods: ["DELETE"])]
+    public function remove(int $id): Response
+    {
+        $especialidade = $this->repository->find($id);
+
+        if (is_null($especialidade)) {
+            return new Response('',Response::HTTP_NOT_FOUND);
+        }
+
+        $this->entityManager->remove($especialidade);
+        $this->entityManager->flush();
+
+        return new Response('', Response::HTTP_NO_CONTENT);
+    }
 }
