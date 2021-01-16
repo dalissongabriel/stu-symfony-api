@@ -63,19 +63,19 @@ class MedicoController
 
         $corpoRequisicao = $request->getContent();
 
-        $medico = $this->medicoFactory->criarMedico($corpoRequisicao);
+        $dadosNovos = json_decode($corpoRequisicao);
 
-        $medicoAntigo = $this->buscaMedico($id);
+        $medico = $this->buscaMedico($id);
 
-        if (is_null($medicoAntigo)) {
+        if (is_null($medico)) {
             return new Response('',Response::HTTP_NOT_FOUND);
         }
-        $medicoAntigo->nome = $medico->nome;
-        $medicoAntigo->crm = $medico->crm;
+        $medico->setNome($dadosNovos->nome);
+        $medico->setCrm($medico->crm);
 
         $this->entityManager->flush();
 
-        return new JsonResponse($medicoAntigo);
+        return new JsonResponse($medico);
     }
 
     #[Route("/medicos/{id}", methods: ["DELETE"])]
