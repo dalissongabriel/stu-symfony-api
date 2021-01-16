@@ -52,4 +52,16 @@ class EspecialidadesController extends AbstractController
 
         return new JsonResponse($especialidadeList);
     }
+
+    #[Route("/especialidades/{id}", methods: ["GET"])]
+    public function buscarUma(int $id): Response
+    {
+        $especialidade = $this->repository->find($id);
+
+        is_null($especialidade)
+            ? $statusCode = Response::HTTP_NO_CONTENT
+            : $statusCode = 200;
+
+        return new JsonResponse($especialidade, $statusCode);
+    }
 }
