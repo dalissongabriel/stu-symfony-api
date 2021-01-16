@@ -7,8 +7,20 @@ medicos:
   methods:
     - GET
 
+medico:
+  path: /medicos/{id}
+  controller: App\Controller\MedicoController::find
+  methods:
+    - GET
+
 especialidades:
   path: /especialidades
   controller: App\Controller\EspecialidadesController::findAll
+  methods:
+    - GET
+
+especialidade:
+  path: /especialidades/{id}
+  controller: App\Controller\EspecialidadesController::find
   methods:
     - GET

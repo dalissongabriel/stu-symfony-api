@@ -41,15 +41,6 @@ class MedicoController extends BaseController
         return new JsonResponse($medico);
     }
 
-    #[Route('/medicos/{id}', methods: ["GET"])]
-    public function buscarUm(int $id, Request $request): Response
-    {
-        $medico = $this->buscaMedico($id);
-        $codigo_status = is_null($medico) ? Response::HTTP_NO_CONTENT :200;
-
-        return new JsonResponse($medico,$codigo_status);
-    }
-
     #[Route('/medicos/{id}', methods: ["PUT"])]
     public function atualiza(int $id, Request $request): Response
     {

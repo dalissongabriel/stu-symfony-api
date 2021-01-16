@@ -31,4 +31,15 @@ abstract class BaseController extends AbstractController
         return new JsonResponse($entityList);
     }
 
+    public function find(int $id): Response
+    {
+        $entity = $this->repository->find($id);
+
+        is_null($entity)
+            ? $statusCode = Response::HTTP_NO_CONTENT
+            : $statusCode = 200;
+
+        return new JsonResponse($entity, $statusCode);
+    }
+
 }
