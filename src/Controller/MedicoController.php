@@ -86,12 +86,8 @@ class MedicoController
         if (is_null($medico)) {
             return new Response('', Response::HTTP_NOT_FOUND);
         }
-
-
         $this->entityManager->remove($medico);
         $this->entityManager->flush();
-        return new JsonResponse($medico);
-
 
         return new Response('', Response::HTTP_NO_CONTENT);
     }
@@ -104,9 +100,10 @@ class MedicoController
     public function buscaMedico(int $id): ?object
     {
 
-        $medico = $this
+        $repository = $this
             ->entityManager
-            ->getReference(Medico::class, $id);
+            ->getRepository(Medico::class);
+        $medico = $repository->find($id);
 
         return $medico;
     }
