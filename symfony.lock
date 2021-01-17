@@ -135,6 +135,9 @@
             "config/packages/sensio_framework_extra.yaml"
         ]
     },
+    "symfony/browser-kit": {
+        "version": "v5.2.1"
+    },
     "symfony/cache": {
         "version": "v5.2.1"
     },
@@ -163,6 +166,9 @@
         "version": "v2.2.0"
     },
     "symfony/doctrine-bridge": {
+        "version": "v5.2.1"
+    },
+    "symfony/dom-crawler": {
         "version": "v5.2.1"
     },
     "symfony/dotenv": {
@@ -235,6 +241,21 @@
     },
     "symfony/orm-pack": {
         "version": "v2.1.0"
+    },
+    "symfony/phpunit-bridge": {
+        "version": "5.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "5.1",
+            "ref": "cb82a2355ec62fef0e7028ac969fe86fa722feb8"
+        },
+        "files": [
+            ".env.test",
+            "bin/phpunit",
+            "phpunit.xml.dist",
+            "tests/bootstrap.php"
+        ]
     },
     "symfony/polyfill-intl-grapheme": {
         "version": "v1.22.0"
