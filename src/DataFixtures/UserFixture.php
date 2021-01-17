@@ -14,6 +14,7 @@ class UserFixture extends Fixture
         $user->setUsername("usuario")
             ->setPassword('$argon2id$v=19$m=65536,t=4,p=1$l7oo326DN9pbiCj+c5F80A$wuldpNGq0GtKbSeedWdjqi90+9Azu+1aaziJw83nkN0');
 
+        $manager->persist($user);
         $manager->flush();
     }
 }
