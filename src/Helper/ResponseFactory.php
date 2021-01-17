@@ -36,7 +36,7 @@ class ResponseFactory
             "success"=>$this->success,
             "currentPage"=>$this->currentPage,
             "itemsPerPage"=>$this->itemsPerPage,
-            "responseContent"=>$this->responseContent
+            "data"=>$this->responseContent
         ];
 
         if (is_null($this->currentPage)) {
@@ -45,7 +45,7 @@ class ResponseFactory
         }
 
         if (is_null($this->responseContent)) {
-            unset($responseContent["responseContent"]);
+            unset($responseContent["data"]);
         }
 
         return new JsonResponse($responseContent, $this->statusCode);
