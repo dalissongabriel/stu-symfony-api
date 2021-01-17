@@ -114,7 +114,7 @@ abstract class BaseController extends AbstractController
     public function create(Request $request): Response
     {
         $content = $request->getContent();
-        $entity = $this->factory->criar($content);
+        $entity = $this->factory->create($content);
 
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
@@ -131,7 +131,7 @@ abstract class BaseController extends AbstractController
     public function update(int $id, Request $request): Response
     {
         $content = $request->getContent();
-        $newEntity = $this->factory->criar($content);
+        $newEntity = $this->factory->create($content);
         $entity = $this->repository->find($id);
 
         if (is_null($entity)) {
