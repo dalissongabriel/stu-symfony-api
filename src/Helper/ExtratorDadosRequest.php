@@ -18,16 +18,10 @@ class ExtratorDadosRequest
             unset($queryString['sort']);
         }
 
-        $paginaAtual = 1;
+        $currentPage = 1;
         if (array_key_exists("page",$queryString)) {
-            $paginaAtual = $queryString['page'];
+            $currentPage = $queryString['page'];
             unset($queryString["page"]);
-        }
-
-        $filterInfo = [];
-        if (array_key_exists("filter", $queryString)) {
-            $filterInfo = $queryString["filter"];
-            unset($queryString["filter"]);
         }
 
         $itemsPerPage = 5;
@@ -36,7 +30,9 @@ class ExtratorDadosRequest
             unset($queryString["itemsPerPage"]);
         }
 
-        return [$sortInfo, $filterInfo, $paginaAtual, $itemsPerPage];
+        $filterInfo = $queryString;
+
+        return [$sortInfo, $filterInfo, $currentPage, $itemsPerPage];
     }
     public function buscaDadosOrdenacao(Request $request)
     {

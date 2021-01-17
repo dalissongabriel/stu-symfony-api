@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Entity\Medico;
 use App\Helper\ExtratorDadosRequest;
 use App\Helper\MedicoFactory;
+use App\Helper\ResponseFactory;
 use App\Repository\MedicoRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,11 +28,29 @@ class MedicoController extends BaseController
     }
 
     #[Route("/especialidades/{id}/medicos", methods: ["GET"])]
-    public function buscarPorEspecialidade(int $id): Response
+    public function buscarPorEspecialidade(int $id, Request $request): Response
     {
-        $medicoList = $this->repository->findBy(["especialidade"=>$id]);
+        $sortInfo = $this->extratorDadosRequest->buscaDadosOrdenacao($request);
+        $filterInfoQueryString = $this->extratorDadosRequest->buscaDadosFiltros($request);
+        $filterInfo = array_merge($filterInfoQueryString, ["especialidade"=>$id]);
+        [$page, $itemsPerPage] = $this->extratorDadosRequest->buscarDadosPaginacao($request);
 
-        return new JsonResponse($medicoList);
+        $medicoList = $this->repository->findBy(
+            $filterInfo,
+            $sortInfo,
+            $itemsPerPage,
+            ($page - 1) * $itemsPerPage
+        );
+
+        $responseFactory = new ResponseFactory(
+            true,
+            $medicoList,
+        Response::HTTP_OK,
+            $page,
+            $itemsPerPage
+        );
+
+        return $responseFactory->getResponse();
     }
 
     /**

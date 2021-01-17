@@ -7,10 +7,10 @@ namespace App\Controller;
 
 use App\Helper\EntidadeFactoryInterface;
 use App\Helper\ExtratorDadosRequest;
+use App\Helper\ResponseFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -32,7 +32,7 @@ abstract class BaseController extends AbstractController
     /**
      * @var ExtratorDadosRequest
      */
-    private ExtratorDadosRequest $extratorDadosRequest;
+    protected ExtratorDadosRequest $extratorDadosRequest;
 
     public function __construct(
         ObjectRepository $repository,
@@ -52,6 +52,7 @@ abstract class BaseController extends AbstractController
     {
         $sortInfo = $this->extratorDadosRequest->buscaDadosOrdenacao($request);
         $filterInfo = $this->extratorDadosRequest->buscaDadosFiltros($request);
+
         [$page, $itemsPerPage] = $this->extratorDadosRequest->buscarDadosPaginacao($request);
 
         $entityList = $this->repository->findBy(
@@ -60,18 +61,32 @@ abstract class BaseController extends AbstractController
             $itemsPerPage,
             ($page - 1) * $itemsPerPage
         );
-        return new JsonResponse($entityList);
+
+        $responseFactory = new ResponseFactory(
+            true,
+            $entityList,
+            Response::HTTP_OK,
+            $page,
+            $itemsPerPage
+        );
+        return $responseFactory->getResponse();
     }
 
     public function find(int $id): Response
     {
         $entity = $this->repository->find($id);
 
-        is_null($entity)
-            ? $statusCode = Response::HTTP_NO_CONTENT
-            : $statusCode = 200;
+        $statusCode = is_null($entity)
+            ? Response::HTTP_NO_CONTENT
+            : Response::HTTP_OK;
 
-        return new JsonResponse($entity, $statusCode);
+        $responseFactory = new ResponseFactory(
+            true,
+            $entity,
+            $statusCode
+        );
+
+        return $responseFactory->getResponse();
     }
 
     public function remove(int $id): Response
@@ -79,42 +94,76 @@ abstract class BaseController extends AbstractController
         $entity = $this->repository->find($id);
 
         if (is_null($entity)) {
-            return new Response('',Response::HTTP_NOT_FOUND);
+            $responseFactory = $this->getResponseFactoryNotFound();
+            return $responseFactory->getResponse();
         }
 
         $this->entityManager->remove($entity);
         $this->entityManager->flush();
 
-        return new Response('', Response::HTTP_NO_CONTENT);
+        $responseFactory = new ResponseFactory(
+            true,
+            $entity,
+            Response::HTTP_NO_CONTENT
+        );
+
+        return $responseFactory->getResponse();
+
     }
 
     public function create(Request $request): Response
     {
-        $corpoRequisicao = $request->getContent();
-        $entitdade = $this->factory->criar($corpoRequisicao);
+        $content = $request->getContent();
+        $entity = $this->factory->criar($content);
 
-        $this->entityManager->persist($entitdade);
+        $this->entityManager->persist($entity);
         $this->entityManager->flush();
 
-        return new JsonResponse($entitdade, Response::HTTP_CREATED);
+        $responseFactory = new ResponseFactory(
+            true,
+            $entity,
+            Response::HTTP_CREATED
+        );
+
+        return $responseFactory->getResponse();
     }
 
     public function update(int $id, Request $request): Response
     {
-        $dadosRequest = $request->getContent();
-        $novaEntidade = $this->factory->criar($dadosRequest);
-        $entidade = $this->repository->find($id);
+        $content = $request->getContent();
+        $newEntity = $this->factory->criar($content);
+        $entity = $this->repository->find($id);
 
-        if (is_null($entidade)) {
-            return new Response('',Response::HTTP_NOT_FOUND);
+        if (is_null($entity)) {
+            $responseFactory = $this->getResponseFactoryNotFound();
+            return $responseFactory->getResponse();
         }
-        $this->atualizaEntidade($entidade, $novaEntidade);
 
+        $this->atualizaEntidade($entity, $newEntity);
         $this->entityManager->flush();
 
-        return new JsonResponse($entidade);
+        $responseFactory = new ResponseFactory(
+            true,
+            $entity,
+            Response::HTTP_OK
+        );
+
+        return $responseFactory->getResponse();
     }
 
     abstract public function atualizaEntidade(object $entidade, object $novaEntidade);
+
+    /**
+     * @return ResponseFactory
+     */
+    public function getResponseFactoryNotFound(): ResponseFactory
+    {
+        $responseFactory = new ResponseFactory(
+            false,
+            null,
+            Response::HTTP_NOT_FOUND
+        );
+        return $responseFactory;
+    }
 
 }
