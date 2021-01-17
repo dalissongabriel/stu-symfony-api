@@ -13,7 +13,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -113,6 +112,8 @@ abstract class BaseController extends AbstractController
         try {
             $this->entityManager->remove($entity);
             $this->entityManager->flush();
+            $this->cache->deleteItem($this->cachePrefix() . $id);
+
         } catch (\Exception $exception) {
             throw new DatabaseException(
                 "Não foi possível excluir o recurso pois ainda existem subrecursos vinculados a ele",
@@ -141,11 +142,7 @@ abstract class BaseController extends AbstractController
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
 
-        $cacheItem = $this->cache->getItem(
-            $this->cachePrefix() . $entity->getId(),
-        );
-        $cacheItem->set($entity);
-        $this->cache->save($cacheItem);
+        $this->persistCache($entity);
 
         $responseFactory = new ResponseFactory(
             true,
@@ -170,6 +167,7 @@ abstract class BaseController extends AbstractController
 
         $this->atualizaEntidade($entity, $newEntity);
         $this->entityManager->flush();
+        $this->persistCache($entity);
 
         $responseFactory = new ResponseFactory(
             true,
@@ -194,6 +192,18 @@ abstract class BaseController extends AbstractController
             Response::HTTP_NOT_FOUND
         );
         return $responseFactory;
+    }
+
+    /**
+     * @param int $id
+     * @param object $entity
+     * @throws \Psr\Cache\InvalidArgumentException
+     */
+    public function persistCache(object $entity): void
+    {
+        $cacheItem = $this->cache->getItem($this->cachePrefix() . $entity->getId());
+        $cacheItem->set($entity);
+        $this->cache->save($cacheItem);
     }
 
 }
