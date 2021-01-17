@@ -82,7 +82,11 @@ abstract class BaseController extends AbstractController
 
     public function find(int $id): Response
     {
-        $entity = $this->repository->find($id);
+        $cacheKey = $this->cachePrefix() . $id;
+        $entity =
+            $this->cache->hasItem($cacheKey)
+            ? $item = $this->cache->getItem($cacheKey)->get()
+            : $this->repository->find($id);
 
         $statusCode = is_null($entity)
             ? Response::HTTP_NO_CONTENT
