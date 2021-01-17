@@ -18,9 +18,11 @@
         "symfony/framework-bundle": "5.2.*",
         "symfony/maker-bundle": "^1.28",
         "symfony/proxy-manager-bridge": "5.2.*",
+        "symfony/security-bundle": "5.2.*",
         "symfony/yaml": "5.2.*"
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.4"
     },
     "config": {
         "optimize-autoloader": true,
