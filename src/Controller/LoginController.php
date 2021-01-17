@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
+use App\Helper\KeyAuthenticationJWTTrait;
 use App\Helper\ResponseFactory;
 use App\Repository\UserRepository;
 use Firebase\JWT\JWT;
@@ -14,6 +14,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class LoginController extends AbstractController
 {
+    use KeyAuthenticationJWTTrait;
     /**
      * @var UserRepository
      */
@@ -67,7 +68,8 @@ class LoginController extends AbstractController
 
         $token = JWT::encode(
             ["username" => $user->getUsername()],
-            '$argon2i$v=19$m=65536,t=4,p=1$dzFUTVpyMk5ENk5RcDRkMA$oDnxVbg/A6heA6rOxncfp/zktWinhB/1LmSWCkJYXOg');
+            KeyAuthenticationJWTTrait::getKey()
+        );
 
         $responseFactory = new ResponseFactory(
             true,

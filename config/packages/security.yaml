@@ -15,10 +15,12 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
-            anonymous: true
-            lazy: true
-            provider: app_user_provider
-
+            pattern: ^\/(?!.*login).*$
+            anonymous: ~
+            logout: ~
+            guard:
+                authenticators:
+                    - App\Security\JWTAuthenticator
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
 
