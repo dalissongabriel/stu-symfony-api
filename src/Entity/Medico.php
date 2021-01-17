@@ -100,6 +100,21 @@ class Medico implements \JsonSerializable
 
     public function jsonSerialize()
     {
-        return get_object_vars($this);
+        return [
+            "id"=>$this->getId(),
+            "crm"=>$this->getCrm(),
+            "nome"=>$this->getNome(),
+            "especialidadeId"=>$this->getEspecialidade()->getId(),
+            "_links" => [
+                [
+                    "rel"=>"self",
+                    "path"=>"/medicos/" . $this->getId()
+                ],
+                [
+                    "rel"=>"especialidade",
+                    "path"=>"/especialidades/" . $this->getEspecialidade()->getId()
+                ]
+            ]
+        ];
     }
 }

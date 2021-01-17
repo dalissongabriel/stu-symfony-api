@@ -160,7 +160,7 @@ abstract class BaseController extends AbstractController
     {
         $responseFactory = new ResponseFactory(
             false,
-            null,
+            "Recurso não encontrado",
             Response::HTTP_NOT_FOUND
         );
         return $responseFactory;
