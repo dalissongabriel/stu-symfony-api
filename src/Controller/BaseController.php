@@ -11,6 +11,7 @@ use App\Helper\Factorys\EntidadeFactoryInterface;
 use App\Helper\Factorys\ResponseFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,19 +36,24 @@ abstract class BaseController extends AbstractController
      * @var ExtratorDadosRequest
      */
     protected ExtratorDadosRequest $extratorDadosRequest;
+    /**
+     * @var CacheItemPoolInterface
+     */
+    protected CacheItemPoolInterface $cache;
 
     public function __construct(
         ObjectRepository $repository,
         EntityManagerInterface $entityManager,
         EntidadeFactoryInterface $factory,
-        ExtratorDadosRequest $extratorDadosRequest
+        ExtratorDadosRequest $extratorDadosRequest,
+        CacheItemPoolInterface $cache
     )
     {
-
         $this->repository = $repository;
         $this->entityManager = $entityManager;
         $this->factory = $factory;
         $this->extratorDadosRequest = $extratorDadosRequest;
+        $this->cache = $cache;
     }
 
     public function findAll(Request $request): Response
@@ -131,6 +137,12 @@ abstract class BaseController extends AbstractController
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
 
+        $cacheItem = $this->cache->getItem(
+            $this->cachePrefix() . $entity->getId(),
+        );
+        $cacheItem->set($entity);
+        $this->cache->save($cacheItem);
+
         $responseFactory = new ResponseFactory(
             true,
             $entity,
@@ -165,6 +177,7 @@ abstract class BaseController extends AbstractController
     }
 
     abstract public function atualizaEntidade(object $entidade, object $novaEntidade);
+    abstract public function cachePrefix(): string;
 
     /**
      * @return ResponseFactory
