@@ -5,6 +5,7 @@ namespace App\Controller;
 
 
 
+use App\Helper\Exceptions\DatabaseException;
 use App\Helper\ExtratorDadosRequest;
 use App\Helper\Factorys\EntidadeFactoryInterface;
 use App\Helper\Factorys\ResponseFactory;
@@ -99,8 +100,17 @@ abstract class BaseController extends AbstractController
             return $responseFactory->getResponse();
         }
 
-        $this->entityManager->remove($entity);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->remove($entity);
+            $this->entityManager->flush();
+        } catch (\Exception $exception) {
+            throw new DatabaseException(
+                "Não foi possível excluir o recurso pois ainda existem subrecursos vinculados a ele",
+                Response::HTTP_PRECONDITION_REQUIRED
+            );
+        }
+
+
 
         $responseFactory = new ResponseFactory(
             true,

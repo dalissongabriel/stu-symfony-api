@@ -4,6 +4,7 @@
 namespace App\EventListeners;
 
 
+use App\Helper\Exceptions\DatabaseException;
 use App\Helper\Exceptions\EntityFactoryException;
 use App\Helper\Factorys\ResponseFactory;
 use App\Helper\Exceptions\EntityNotFoundException;
@@ -21,10 +22,12 @@ class ExceptionHandler implements EventSubscriberInterface
     {
         return [
             KernelEvents::EXCEPTION => [
-                ['handle404Exception',3],
-                ['handle400Exception',2],
-                ['handleEntityException',1],
-                ['handleEntityNotFoundException',0]
+                ['handle404Exception',4],
+                ['handle400Exception',3],
+                ['handleEntityException',2],
+                ['handleEntityNotFoundException',1],
+                ['handleDatabaseException',0]
+
             ]
         ];
     }
@@ -82,4 +85,19 @@ class ExceptionHandler implements EventSubscriberInterface
             $event->setResponse($responseFactory->getResponse());
         }
     }
+
+    public function handleDatabaseException(ExceptionEvent $event)
+    {
+        $exception = $event->getThrowable();
+
+        if ($exception instanceof  DatabaseException) {
+            $responseFactory = ResponseFactory::fromError(
+                $exception,
+                $exception->getCode()
+            );
+
+            $event->setResponse($responseFactory->getResponse());
+        }
+    }
+
 }
