@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Helper;
+namespace App\Helper\Exceptions;
 
 
 class EntityNotFoundException extends \Exception

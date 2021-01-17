@@ -3,12 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Especialidade;
-use App\Helper\EspecialidadeFactory;
 use App\Helper\ExtratorDadosRequest;
+use App\Helper\Factorys\EspecialidadeFactory;
 use App\Repository\EspecialidadeRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 

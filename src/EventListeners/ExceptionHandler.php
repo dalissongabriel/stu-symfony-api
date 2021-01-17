@@ -4,12 +4,14 @@
 namespace App\EventListeners;
 
 
-use App\Helper\EntityFactoryException;
-use App\Helper\ResponseFactory;
-use Doctrine\ORM\EntityNotFoundException;
+use App\Helper\Exceptions\EntityFactoryException;
+use App\Helper\Factorys\ResponseFactory;
+use App\Helper\Exceptions\EntityNotFoundException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -20,7 +22,8 @@ class ExceptionHandler implements EventSubscriberInterface
     {
         return [
             KernelEvents::EXCEPTION => [
-                ['handle404Exception',2],
+                ['handle404Exception',3],
+                ['handle400Exception',2],
                 ['handleEntityException',1],
                 ['handleEntityNotFoundException',0]
             ]
@@ -58,6 +61,20 @@ class ExceptionHandler implements EventSubscriberInterface
         $exception = $event->getThrowable();
 
         if ($exception instanceof  EntityNotFoundException) {
+            $responseFactory = ResponseFactory::fromError(
+                $exception,
+                $exception->getCode()
+            );
+
+            $event->setResponse($responseFactory->getResponse());
+        }
+    }
+
+    public function handle400Exception(ExceptionEvent $event)
+    {
+        $exception = $event->getThrowable();
+
+        if ($exception instanceof  BadRequestHttpException) {
             $responseFactory = ResponseFactory::fromError(
                 $exception,
                 Response::HTTP_BAD_REQUEST

@@ -1,10 +1,11 @@
 <?php
 
 
-namespace App\Helper;
+namespace App\Helper\Factorys;
 
 
 use App\Entity\Especialidade;
+use App\Helper\Exceptions\EntityFactoryException;
 
 class EspecialidadeFactory implements EntidadeFactoryInterface
 {

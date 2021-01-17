@@ -2,8 +2,9 @@
 
 namespace App\Controller;
 
+use App\Helper\Factorys\LoginFactory;
+use App\Helper\Factorys\ResponseFactory;
 use App\Helper\KeyAuthenticationJWTTrait;
-use App\Helper\ResponseFactory;
 use App\Repository\UserRepository;
 use Firebase\JWT\JWT;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,32 +40,17 @@ class LoginController extends AbstractController
     }
 
     #[Route('/login', name: 'login', methods: ["POST"])]
-    public function index(Request $request): Response
+    public function login(Request $request): Response
     {
-        $content = json_decode($request->getContent());
+        $LoginFactory = new LoginFactory(
+            $this->repository,
+            $this->encoder
+        );
 
-        if (is_null($content->username) || is_null($content->password)) {
-            $responseFactory = new ResponseFactory(
-                false,
-                "Favor enviar usuário e senha",
-                Response::HTTP_BAD_REQUEST
-            );
-            return $responseFactory->getResponse();
-        }
-
-        $user = $this->repository->findOneBy(["username" => $content->username]);
-
-        $passwordValid = $this->encoder->isPasswordValid($user, $content->password);
-
-        if (!$passwordValid) {
-            $responseFactory = new ResponseFactory(
-                false,
-                "Usuário ou senha inválidos",
-                Response::HTTP_UNAUTHORIZED
-            );
-
-            return $responseFactory->getResponse();
-        }
+        /**
+         * @var User $user
+         */
+        $user = $LoginFactory->create($request->getContent());
 
         $token = JWT::encode(
             ["username" => $user->getUsername()],

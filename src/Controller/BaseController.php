@@ -5,9 +5,9 @@ namespace App\Controller;
 
 
 
-use App\Helper\EntidadeFactoryInterface;
 use App\Helper\ExtratorDadosRequest;
-use App\Helper\ResponseFactory;
+use App\Helper\Factorys\EntidadeFactoryInterface;
+use App\Helper\Factorys\ResponseFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

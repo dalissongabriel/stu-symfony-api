@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Helper;
+namespace App\Helper\Factorys;
 
 interface EntidadeFactoryInterface
 {
