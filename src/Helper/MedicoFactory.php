@@ -6,6 +6,7 @@ namespace App\Helper;
 
 use App\Entity\Medico;
 use App\Repository\EspecialidadeRepository;
+use Doctrine\ORM\EntityNotFoundException;
 
 class MedicoFactory implements EntidadeFactoryInterface
 {
@@ -19,19 +20,47 @@ class MedicoFactory implements EntidadeFactoryInterface
         $this->especialidadeRepository = $especialidadeRepository;
     }
 
-    public function criar(string $json): Medico
+    public function create(string $requestContent): Medico
     {
-        $dadosJson = json_decode($json);
-        $especialidadeId = $dadosJson->especialidadeId;
+        $content = json_decode($requestContent);
+        $this->checkRequiredProperties($content);
+
+        $especialidadeId = $content->especialidadeId;
         $especialidade = $this->especialidadeRepository->find($especialidadeId);
 
+        if (is_null($especialidade)) {
+            throw new EntityNotFoundException(
+                "Especialidade: $especialidadeId não existe. Informe uma especialidade cadastrada"
+            );
+        }
 
         $medico = new Medico();
-        $medico->setCrm( $dadosJson->crm)
-            ->setNome($dadosJson->nome)
+        $medico->setCrm($content->crm)
+            ->setNome($content->nome)
             ->setEspecialidade($especialidade);
 
         return $medico;
     }
 
+    private function checkRequiredProperties(object $content)
+    {
+        if(!property_exists($content,"nome")) {
+            throw new EntityFactoryException(
+                "Para criar um médico, deve ser informado o campo: nome"
+            );
+        }
+
+        if(!property_exists($content,"crm")) {
+            throw new EntityFactoryException(
+                "Para criar um médico, deve ser informado o campo: crm"
+            );
+        }
+
+        if(!property_exists($content,"especialidadeId")) {
+            throw new EntityFactoryException(
+                "Para criar um médico, deve ser informado o campo: especialidadeId"
+            );
+        }
+
+    }
 }

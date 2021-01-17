@@ -4,9 +4,10 @@
 namespace App\EventListeners;
 
 
+use App\Helper\EntityFactoryException;
 use App\Helper\ResponseFactory;
+use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -18,7 +19,11 @@ class ExceptionHandler implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::EXCEPTION => 'handle404Exception'
+            KernelEvents::EXCEPTION => [
+                ['handle404Exception',2],
+                ['handleEntityException',1],
+                ['handleEntityNotFoundException',0]
+            ]
         ];
     }
 
@@ -26,13 +31,38 @@ class ExceptionHandler implements EventSubscriberInterface
     {
         if ($event->getThrowable() instanceof NotFoundHttpException) {
 
+            $responseFactory = ResponseFactory::fromError(
+                $event->getThrowable(),
+                Response::HTTP_NOT_FOUND);
 
+            $event->setResponse($responseFactory->getResponse());
+        }
+    }
 
-            $responseFactory = new ResponseFactory(
-                false,
-                'Erro 404 - Rota não encontrada',
-                Response::HTTP_NOT_FOUND
+    public function handleEntityException(ExceptionEvent $event) {
+
+        $exception = $event->getThrowable();
+
+        if ($exception instanceof  EntityFactoryException) {
+            $responseFactory = ResponseFactory::fromError(
+                $exception,
+                Response::HTTP_BAD_REQUEST
             );
+
+            $event->setResponse($responseFactory->getResponse());
+        }
+    }
+
+    public function handleEntityNotFoundException(ExceptionEvent $event)
+    {
+        $exception = $event->getThrowable();
+
+        if ($exception instanceof  EntityNotFoundException) {
+            $responseFactory = ResponseFactory::fromError(
+                $exception,
+                Response::HTTP_BAD_REQUEST
+            );
+
             $event->setResponse($responseFactory->getResponse());
         }
     }

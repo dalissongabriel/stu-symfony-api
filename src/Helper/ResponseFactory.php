@@ -12,22 +12,30 @@ class ResponseFactory
     private bool $success;
     private ?int $currentPage;
     private ?int $itemsPerPage;
-    private $responseContent;
+    private $data;
     private int $statusCode;
 
     public function __construct(
         bool $success,
-        $responseContent,
+        $data,
         int $statusCode = Response::HTTP_OK,
         ?int $currentPage = null,
         ?int $itemsPerPage = null
     )
     {
         $this->success = $success;
-        $this->responseContent = $responseContent;
+        $this->data = $data;
         $this->currentPage = $currentPage;
         $this->itemsPerPage = $itemsPerPage;
         $this->statusCode = $statusCode;
+    }
+
+    public static function fromError(\Throwable $error, int $statusCode = HTTP_INTERNAL_SERVER_ERROR): self
+    {
+        return new self(
+            false,
+            ['message' => $error->getMessage()],
+            $statusCode);
     }
 
     public function getResponse(): JsonResponse
@@ -36,7 +44,7 @@ class ResponseFactory
             "success"=>$this->success,
             "currentPage"=>$this->currentPage,
             "itemsPerPage"=>$this->itemsPerPage,
-            "data"=>$this->responseContent
+            "data"=>$this->data
         ];
 
         if (is_null($this->currentPage)) {
@@ -44,7 +52,7 @@ class ResponseFactory
             unset($responseContent["itemsPerPage"]);
         }
 
-        if (is_null($this->responseContent)) {
+        if (is_null($this->data)) {
             unset($responseContent["data"]);
         }
 

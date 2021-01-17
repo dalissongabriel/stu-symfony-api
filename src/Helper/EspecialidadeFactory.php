@@ -9,13 +9,24 @@ use App\Entity\Especialidade;
 class EspecialidadeFactory implements EntidadeFactoryInterface
 {
 
-    public function criar(string $corpoRequisicao): Especialidade
+    public function create(string $requestContent): Especialidade
     {
+        $content = json_decode($requestContent);
+        $this->checkRequiredProperties($content);
 
-        $dadosJson = json_decode($corpoRequisicao);
         $especialidade = new Especialidade();
-        $especialidade->setDescricao($dadosJson->descricao);
+        $especialidade->setDescricao($content->descricao);
 
         return $especialidade;
     }
+
+    private function checkRequiredProperties(object $content)
+    {
+        if(!property_exists($content,"descricao")) {
+            throw new EntityFactoryException(
+                "Especialidade precisa de descrição"
+            );
+        }
+    }
+
 }
