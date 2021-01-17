@@ -4,8 +4,8 @@
 namespace App\Security;
 
 
+use App\Helper\Factorys\ResponseFactory;
 use App\Helper\KeyAuthenticationJWTTrait;
-use App\Helper\ResponseFactory;
 use App\Repository\UserRepository;
 use Firebase\JWT\JWT;
 use Symfony\Component\HttpFoundation\Request;

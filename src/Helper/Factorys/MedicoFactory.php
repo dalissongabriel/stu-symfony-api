@@ -5,8 +5,10 @@ namespace App\Helper\Factorys;
 
 
 use App\Entity\Medico;
+use App\Helper\Exceptions\EntityFactoryException;
+use App\Helper\Exceptions\EntityNotFoundException;
 use App\Repository\EspecialidadeRepository;
-use Doctrine\ORM\EntityNotFoundException;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Response;
 
 class MedicoFactory implements EntidadeFactoryInterface
@@ -24,6 +26,14 @@ class MedicoFactory implements EntidadeFactoryInterface
     public function create(string $requestContent): Medico
     {
         $content = json_decode($requestContent);
+
+        if (is_null($content)) {
+            throw new BadRequestException(
+                "Requisição mal feita: confira o corpo da requisição",
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
         $this->checkRequiredProperties($content);
 
         $especialidadeId = $content->especialidadeId;
@@ -31,7 +41,8 @@ class MedicoFactory implements EntidadeFactoryInterface
 
         if (is_null($especialidade)) {
             throw new EntityNotFoundException(
-                "Especialidade: $especialidadeId não existe. Informe uma especialidade cadastrada"
+                "Especialidade: $especialidadeId não existe. Informe uma especialidade cadastrada",
+                Response::HTTP_BAD_REQUEST
             );
         }
 
@@ -47,7 +58,7 @@ class MedicoFactory implements EntidadeFactoryInterface
     {
         if(!property_exists($content,"nome")) {
             throw new EntityFactoryException(
-                "Para criar um médico, deve ser informado o campo: nome",
+                "Para a entidade Médico deve ser informado o campo: nome",
                 Response::HTTP_BAD_REQUEST
 
             );
@@ -55,14 +66,14 @@ class MedicoFactory implements EntidadeFactoryInterface
 
         if(!property_exists($content,"crm")) {
             throw new EntityFactoryException(
-                "Para criar um médico, deve ser informado o campo: crm",
+                "Para a entidade Médico deve ser informado o campo: crm",
                 Response::HTTP_BAD_REQUEST
             );
         }
 
         if(!property_exists($content,"especialidadeId")) {
             throw new EntityFactoryException(
-                "Para criar um médico, deve ser informado o campo: especialidadeId",
+                "Para a entidade Médico deve ser informado o campo: especialidadeId",
                 Response::HTTP_BAD_REQUEST
             );
         }

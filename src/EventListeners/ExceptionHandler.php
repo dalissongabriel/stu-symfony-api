@@ -8,7 +8,6 @@ use App\Helper\Exceptions\EntityFactoryException;
 use App\Helper\Factorys\ResponseFactory;
 use App\Helper\Exceptions\EntityNotFoundException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;

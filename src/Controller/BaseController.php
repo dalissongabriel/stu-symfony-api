@@ -11,6 +11,7 @@ use App\Helper\Factorys\ResponseFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -114,6 +115,7 @@ abstract class BaseController extends AbstractController
     public function create(Request $request): Response
     {
         $content = $request->getContent();
+
         $entity = $this->factory->create($content);
 
         $this->entityManager->persist($entity);
@@ -132,6 +134,7 @@ abstract class BaseController extends AbstractController
     {
         $content = $request->getContent();
         $newEntity = $this->factory->create($content);
+
         $entity = $this->repository->find($id);
 
         if (is_null($entity)) {
@@ -160,7 +163,7 @@ abstract class BaseController extends AbstractController
     {
         $responseFactory = new ResponseFactory(
             false,
-            "Recurso não encontrado",
+            "Entidade não foi encontrada",
             Response::HTTP_NOT_FOUND
         );
         return $responseFactory;
